@@ -1,0 +1,158 @@
+/* src/components/Layout.css */
+
+.app-layout {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-primary-dark);
+}
+
+.content-panel {
+  flex-grow: 1;
+  padding: 24px 32px;
+  overflow-y: auto;
+  background-color: var(--color-background);
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  transition: margin-left 0.3s ease;
+  box-sizing: border-box; /* Garante que o padding não afete a largura total */
+}
+
+/* --- ESTA É A NOVA REGRA CRÍTICA --- */
+/* Ela força o filho direto do painel (no caso, a página renderizada pelo Outlet)
+   a ocupar 100% da largura disponível. */
+.content-panel > * {
+  width: 100%;
+}
+
+
+/* --- O RESTO DO ARQUIVO --- */
+
+.sidebar {
+  width: 275px;
+  flex-shrink: 0;
+  background-color: var(--color-primary-dark);
+  color: var(--color-text-light);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  transition: width 0.3s ease;
+}
+
+.sidebar-collapsed .sidebar {
+  width: 60px;
+}
+
+.sidebar-collapsed .user-profile,
+.sidebar-collapsed .nav-link {
+  justify-content: center;
+}
+
+.sidebar-collapsed .logo-image {
+  height: 40px;
+}
+
+.sidebar-collapsed .nav-icon {
+  margin-right: 0;
+}
+
+.toggle-arrow img {
+  height: 25px;
+  width: auto;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-collapsed .toggle-arrow img {
+  transform: rotate(180deg);
+}
+
+.sidebar-content {
+  padding: 12px;
+  flex-grow: 1;
+  overflow: hidden; 
+}
+
+.sidebar-header {
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.logo-image {
+  max-width: 100%;
+  height: 70px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.avatar-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+}
+
+.user-details span {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.main-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12px 10px;
+  font-size: 14px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 16px;
+}
+
+.nav-link:hover {
+  background-color: var(--color-primary-medium);
+  color: var(--color-text-light);
+}
+
+.nav-link.active {
+  background-color: var(--color-accent);
+  color: var(--color-text-light);
+  font-weight: 500;
+}
+
+.sidebar-footer {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.toggle-arrow {
+  cursor: pointer;
+}

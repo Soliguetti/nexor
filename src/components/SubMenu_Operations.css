@@ -1,0 +1,52 @@
+.submenu-nav {
+  width: 100%;
+  border-bottom: 0px solid #e0e0e0;
+  margin-bottom: 24px;
+}
+
+.submenu-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 32px;
+  /* ADICIONADO: Essencial para posicionar o traço corretamente */
+  position: relative;
+}
+
+.submenu-nav a {
+  display: inline-block;
+  padding: 16px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  /* MUDOU: A borda agora é transparente para não causar 'pulos' de layout */
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s;
+}
+
+.submenu-nav a:hover {
+  color: var(--color-accent);
+}
+
+.submenu-nav a.active {
+  color: var(--color-primary-dark);
+  /* MUDOU: Removemos a borda daqui, pois o <div> a substitui */
+  /* border-bottom: 3px solid var(--color-primary-dark); */
+}
+
+/* --- ADICIONADO: Estilos para o nosso traço animado --- */
+.underline {
+  position: absolute;
+  bottom: 0; /* Alinha o traço na parte de baixo do menu */
+  height: 3px; /* Espessura do traço */
+  background-color: var(--color-primary-dark);
+
+  /* A mágica da animação fluida! */
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Seu pedido de bordas arredondadas */
+  border-radius: 10px;
+}

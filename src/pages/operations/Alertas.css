@@ -1,0 +1,6 @@
+.alertas-page-container {
+  /* Isso estabelece um 'limite' para os elementos com position: absolute dentro dele */
+  position: relative;
+  /* Damos uma altura mínima para garantir que o container não fique com altura 0 se não tiver conteúdo */
+  min-height: 200px; 
+}
