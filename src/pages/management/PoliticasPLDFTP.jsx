@@ -1,16 +1,35 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
-import { Box } from '@mui/material';
+import { Box, Button, Drawer, Typography, List, ListItem, ListItemButton, ListItemText, ListItemIcon, TextField, Stack, Paper, Divider } from '@mui/material';
 import GridLayout from 'react-grid-layout';
+
+// --- Ícones ---
+import DehazeIcon from '@mui/icons-material/Dehaze';
+import TextFieldIcon from '@mui/icons-material/TextFields';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import GridOnIcon from '@mui/icons-material/GridOn';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import DescriptionIcon from '@mui/icons-material/Description';
+import StorageIcon from '@mui/icons-material/Storage';
+import NumbersIcon from '@mui/icons-material/Numbers';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import SaveIcon from '@mui/icons-material/Save';
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
-import PolicyToolbar from '../../components/PolicyToolbar';
+// --- Componentes de Bloco ---
 import SessionBlock from '../../components/SessionBlock';
 import TextBlock from '../../components/TextBlock';
 import DateTimeBlock from '../../components/DateTimeBlock';
 import LocationBlock from '../../components/LocationBlock';
 import MatrixBlock from '../../components/MatrixBlock';
+import ListBlock from '../../components/ListBlock';
+import DocumentBlock from '../../components/DocumentBlock';
+import APIBlock from '../../components/APIBlock';
+import NumberBlock from '../../components/NumberBlock';
+import MultiChoiceBlock from '../../components/MultiChoiceBlock';
 
 const useContainerWidth = () => {
   const ref = useRef(null);
@@ -29,17 +48,34 @@ const useContainerWidth = () => {
   return { ref, width };
 };
 
+const blockTypes = [
+    { name: 'Sessão', icon: <DehazeIcon /> },
+    { name: 'Entrada', icon: <TextFieldIcon /> },
+    { name: 'Numérico', icon: <NumbersIcon /> },
+    { name: 'Data / Horário', icon: <ScheduleIcon /> },
+    { name: 'Localização', icon: <LocationOnIcon /> },
+    { name: 'Múltipla Escolha', icon: <ChecklistIcon /> },
+    { name: 'Matriz', icon: <GridOnIcon /> },
+    { name: 'Lista', icon: <FormatListBulletedIcon /> },
+    { name: 'Documento', icon: <DescriptionIcon /> },
+    { name: 'Fonte de Dados', icon: <StorageIcon /> },
+];
+
 export default function PoliticasPLDFTP() {
   const [blocks, setBlocks] = useState([]);
   const [layout, setLayout] = useState([]);
   const { ref, width } = useContainerWidth();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
+  const [policyName, setPolicyName] = useState('');
+  const [policyVersion, setPolicyVersion] = useState('');
 
   const handleAddBlock = (type) => {
     const newBlockId = Date.now().toString();
     const newBlock = { id: newBlockId, type: type };
     setBlocks((prevBlocks) => [...prevBlocks, newBlock]);
 
-    let defaultHeight = 1; // Altura padrão definida como 1
+    let defaultHeight = 1;
     if (type === 'Localização' || type === 'Matriz') {
       defaultHeight = 3;
     }
@@ -50,11 +86,10 @@ export default function PoliticasPLDFTP() {
       y: Infinity,
       w: 12,
       h: defaultHeight,
-      minW: 12,
-      maxW: 12,
+      minW: 4,
     };
 
-    if (type === 'Entrada' || type === 'Sessão' || type === 'Data / Horário' || type === 'Numérico' || type === 'Variável' || type === 'Texto') {
+    if (['Entrada', 'Sessão', 'Data / Horário', 'Texto', 'Lista', 'Documento', 'Fonte de Dados', 'Numérico', 'Múltipla Escolha'].includes(type)) {
       newLayoutItem.minH = defaultHeight;
       newLayoutItem.maxH = defaultHeight;
     }
@@ -75,22 +110,134 @@ export default function PoliticasPLDFTP() {
     setLayout(newLayout);
     setBlocks(newBlocksOrder);
   };
+  
+  const handleSelectBlockType = (type) => {
+    handleAddBlock(type);
+    setIsDrawerOpen(false);
+  };
+  
+  const getPolicyData = () => {
+    return {
+        id: `policy_${Date.now()}`, // Adiciona um ID único para cada política
+        name: policyName,
+        version: policyVersion,
+        blocks: blocks,
+        layout: layout,
+    };
+  };
+
+  const handlePreview = () => {
+    const policyData = getPolicyData();
+    console.log("Visualizando Política:", JSON.stringify(policyData, null, 2));
+    alert('Verifique o console (F12) para ver os dados da política que seriam usados na visualização.');
+  };
+
+  // --- FUNÇÃO DE SALVAR ATUALIZADA ---
+  const handleSavePolicy = () => {
+    if (!policyName || !policyVersion) {
+        alert('Por favor, preencha o Nome da Política e a Versão antes de salvar.');
+        return;
+    }
+
+    const newPolicyData = getPolicyData();
+    
+    // 1. Pega as políticas existentes do localStorage (ou cria um array vazio)
+    const existingPolicies = JSON.parse(localStorage.getItem('savedPolicies')) || [];
+    
+    // 2. Adiciona a nova política à lista
+    existingPolicies.push(newPolicyData);
+
+    // 3. Salva a lista atualizada de volta no localStorage
+    localStorage.setItem('savedPolicies', JSON.stringify(existingPolicies));
+
+    console.log("Política Salva:", JSON.stringify(newPolicyData, null, 2));
+    console.log("Todas as Políticas Salvas:", existingPolicies);
+    alert(`Política "${policyName}" (Versão ${policyVersion}) foi salva com sucesso!`);
+  };
 
   return (
     <Box>
-      <Box
-        sx={{
-          position: 'sticky', top: 0, zIndex: 10,
-          backgroundColor: 'var(--color-background)',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-          padding: '12px 24px', width: '100%', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box',
-        }}
-      >
-        <PolicyToolbar onAddBlock={handleAddBlock} />
+      <Box sx={{ padding: '0 24px 24px 24px' }}>
+        <Paper variant="outlined" sx={{ p: 2, borderRadius: '12px', borderColor: '#d0d7e2' }}>
+          <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+            <Box sx={{ display: 'flex', gap: 2, flexGrow: 1 }}>
+              <TextField
+                label="Nome da Política"
+                variant="outlined"
+                size="small"
+                value={policyName}
+                onChange={(e) => setPolicyName(e.target.value)}
+                sx={{ flexGrow: 1 }}
+              />
+              <TextField
+                label="Versão"
+                variant="outlined"
+                size="small"
+                value={policyVersion}
+                onChange={(e) => setPolicyVersion(e.target.value)}
+                sx={{ width: '150px' }}
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Divider orientation="vertical" flexItem />
+                <Button 
+                    variant="outlined" 
+                    color="primary"
+                    onClick={handlePreview}
+                    startIcon={<VisibilityIcon />}
+                    sx={{ height: '40px' }}
+                >
+                    Visualizar
+                </Button>
+                <Button 
+                    variant="contained" 
+                    onClick={handleSavePolicy}
+                    startIcon={<SaveIcon />}
+                    sx={{ height: '40px' }}
+                >
+                    Salvar
+                </Button>
+            </Box>
+          </Stack>
+        </Paper>
       </Box>
 
-      <Box ref={ref} sx={{ padding: '24px' }}>
+      <Box sx={{ padding: '0 24px 24px 24px', display: 'flex', gap: 1.5 }}>
+        <Button variant="outlined" onClick={() => setIsDrawerOpen(true)} sx={{ fontSize: '14px', fontWeight: 500, borderRadius: '8px', textTransform: 'none', padding: '2px 12px', height: '32px', borderColor: '#d0d7e2', color: 'text.primary', '&:hover': { borderColor: 'primary.main', backgroundColor: 'action.hover' } }}>
+          + Campo
+        </Button>
+        <Button variant="outlined" sx={{ fontSize: '14px', fontWeight: 500, borderRadius: '8px', textTransform: 'none', padding: '2px 12px', height: '32px', borderColor: '#d0d7e2', color: 'text.primary', '&:hover': { borderColor: 'primary.main', backgroundColor: 'action.hover' } }}>
+          + API
+        </Button>
+      </Box>
+
+      <Drawer
+        anchor="right"
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+      >
+        <Box
+          sx={{ width: 280, p: 2 }}
+          role="presentation"
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>Adicionar Novo Campo</Typography>
+          <List>
+            {blockTypes.map((block) => (
+              <ListItem key={block.name} disablePadding>
+                <ListItemButton onClick={() => handleSelectBlockType(block.name)}>
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    {block.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={block.name} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+
+      <Box ref={ref} sx={{ padding: '0 24px' }}>
         <GridLayout
           layout={layout}
           onLayoutChange={handleLayoutChange}
@@ -101,15 +248,19 @@ export default function PoliticasPLDFTP() {
           isResizable
           draggableCancel=".no-drag"
           compactType="vertical"
-          // A propriedade 'preventCollision={true}' foi removida
         >
           {blocks.map((block) => {
             let componentToRender;
             if (block.type === 'Sessão') componentToRender = <SessionBlock onDelete={() => handleDeleteBlock(block.id)} />;
             else if (block.type === 'Entrada' || block.type === 'Texto') componentToRender = <TextBlock onDelete={() => handleDeleteBlock(block.id)} />;
+            else if (block.type === 'Numérico') componentToRender = <NumberBlock onDelete={() => handleDeleteBlock(block.id)} />;
             else if (block.type === 'Data / Horário') componentToRender = <DateTimeBlock onDelete={() => handleDeleteBlock(block.id)} />;
             else if (block.type === 'Localização') componentToRender = <LocationBlock onDelete={() => handleDeleteBlock(block.id)} />;
+            else if (block.type === 'Múltipla Escolha') componentToRender = <MultiChoiceBlock onDelete={() => handleDeleteBlock(block.id)} />;
             else if (block.type === 'Matriz') componentToRender = <MatrixBlock onDelete={() => handleDeleteBlock(block.id)} />;
+            else if (block.type === 'Lista') componentToRender = <ListBlock onDelete={() => handleDeleteBlock(block.id)} />;
+            else if (block.type === 'Documento') componentToRender = <DocumentBlock onDelete={() => handleDeleteBlock(block.id)} />;
+            else if (block.type === 'Fonte de Dados') componentToRender = <APIBlock onDelete={() => handleDeleteBlock(block.id)} />;
             else componentToRender = <div>Bloco desconhecido</div>;
             
             return (
