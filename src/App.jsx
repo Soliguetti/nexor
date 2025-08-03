@@ -17,6 +17,7 @@ import AlertasTransacionais from './pages/management/AlertasTransacionais';
 import AlertasMonitoramento from './pages/management/AlertasMonitoramento';
 import PoliticasPLDFTP from './pages/management/PoliticasPLDFTP';
 import MonitoramentoPage from './pages/management/MonitoramentoPage';
+import Politica_Demonstracao from './pages/view/Politica_Demonstracao';
 
 // --- PÁGINAS PLACEHOLDER (MANTIDAS COMO ESTAVAM) ---
 const Dashboard = () => <div><h1>Dashboard</h1></div>;
@@ -79,6 +80,12 @@ const router = createBrowserRouter([
       },
     ],
   },
+
+  {
+    path: '/demonstracao',
+    element: <Politica_Demonstracao />,
+  }
+  
 ]);
 
 function App() {

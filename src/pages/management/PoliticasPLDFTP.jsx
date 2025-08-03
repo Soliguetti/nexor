@@ -14,7 +14,7 @@ import StorageIcon from '@mui/icons-material/Storage';
 import NumbersIcon from '@mui/icons-material/Numbers';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import SaveIcon from '@mui/icons-material/Save';
+import SaveIcon from '@mui/icons-material/Save'; // ÍCONE NOVO
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -49,16 +49,16 @@ const useContainerWidth = () => {
 };
 
 const blockTypes = [
-    { name: 'Sessão', icon: <DehazeIcon /> },
-    { name: 'Entrada', icon: <TextFieldIcon /> },
-    { name: 'Numérico', icon: <NumbersIcon /> },
-    { name: 'Data / Horário', icon: <ScheduleIcon /> },
-    { name: 'Localização', icon: <LocationOnIcon /> },
-    { name: 'Múltipla Escolha', icon: <ChecklistIcon /> },
-    { name: 'Matriz', icon: <GridOnIcon /> },
-    { name: 'Lista', icon: <FormatListBulletedIcon /> },
-    { name: 'Documento', icon: <DescriptionIcon /> },
-    { name: 'Fonte de Dados', icon: <StorageIcon /> },
+  { name: 'Sessão', icon: <DehazeIcon /> },
+  { name: 'Entrada', icon: <TextFieldIcon /> },
+  { name: 'Numérico', icon: <NumbersIcon /> },
+  { name: 'Data / Horário', icon: <ScheduleIcon /> },
+  { name: 'Localização', icon: <LocationOnIcon /> },
+  { name: 'Múltipla Escolha', icon: <ChecklistIcon /> },
+  { name: 'Matriz', icon: <GridOnIcon /> },
+  { name: 'Lista', icon: <FormatListBulletedIcon /> },
+  { name: 'Documento', icon: <DescriptionIcon /> },
+  { name: 'Fonte de Dados', icon: <StorageIcon /> },
 ];
 
 export default function PoliticasPLDFTP() {
@@ -116,9 +116,9 @@ export default function PoliticasPLDFTP() {
     setIsDrawerOpen(false);
   };
   
+  // Função para coletar os dados da política
   const getPolicyData = () => {
     return {
-        id: `policy_${Date.now()}`, // Adiciona um ID único para cada política
         name: policyName,
         version: policyVersion,
         blocks: blocks,
@@ -132,34 +132,21 @@ export default function PoliticasPLDFTP() {
     alert('Verifique o console (F12) para ver os dados da política que seriam usados na visualização.');
   };
 
-  // --- FUNÇÃO DE SALVAR ATUALIZADA ---
+  // --- NOVA FUNÇÃO PARA SALVAR ---
   const handleSavePolicy = () => {
-    if (!policyName || !policyVersion) {
-        alert('Por favor, preencha o Nome da Política e a Versão antes de salvar.');
-        return;
-    }
-
-    const newPolicyData = getPolicyData();
-    
-    // 1. Pega as políticas existentes do localStorage (ou cria um array vazio)
-    const existingPolicies = JSON.parse(localStorage.getItem('savedPolicies')) || [];
-    
-    // 2. Adiciona a nova política à lista
-    existingPolicies.push(newPolicyData);
-
-    // 3. Salva a lista atualizada de volta no localStorage
-    localStorage.setItem('savedPolicies', JSON.stringify(existingPolicies));
-
-    console.log("Política Salva:", JSON.stringify(newPolicyData, null, 2));
-    console.log("Todas as Políticas Salvas:", existingPolicies);
-    alert(`Política "${policyName}" (Versão ${policyVersion}) foi salva com sucesso!`);
+    const policyData = getPolicyData();
+    // Aqui você enviaria 'policyData' para uma API ou salvaria no localStorage
+    console.log("Salvando Política:", JSON.stringify(policyData, null, 2));
+    alert(`Política "${policyName}" salva com sucesso! (Verifique o console para ver os dados)`);
   };
 
   return (
     <Box>
+      {/* --- SEÇÃO SUPERIOR ATUALIZADA --- */}
       <Box sx={{ padding: '0 24px 24px 24px' }}>
         <Paper variant="outlined" sx={{ p: 2, borderRadius: '12px', borderColor: '#d0d7e2' }}>
           <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+            {/* Campos da Esquerda */}
             <Box sx={{ display: 'flex', gap: 2, flexGrow: 1 }}>
               <TextField
                 label="Nome da Política"
@@ -179,6 +166,7 @@ export default function PoliticasPLDFTP() {
               />
             </Box>
 
+            {/* Divisor e Botões à Direita */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Divider orientation="vertical" flexItem />
                 <Button 
@@ -203,6 +191,7 @@ export default function PoliticasPLDFTP() {
         </Paper>
       </Box>
 
+      {/* Botões de Ação */}
       <Box sx={{ padding: '0 24px 24px 24px', display: 'flex', gap: 1.5 }}>
         <Button variant="outlined" onClick={() => setIsDrawerOpen(true)} sx={{ fontSize: '14px', fontWeight: 500, borderRadius: '8px', textTransform: 'none', padding: '2px 12px', height: '32px', borderColor: '#d0d7e2', color: 'text.primary', '&:hover': { borderColor: 'primary.main', backgroundColor: 'action.hover' } }}>
           + Campo
@@ -212,6 +201,7 @@ export default function PoliticasPLDFTP() {
         </Button>
       </Box>
 
+      {/* Menu Lateral (Drawer) */}
       <Drawer
         anchor="right"
         open={isDrawerOpen}
@@ -237,6 +227,7 @@ export default function PoliticasPLDFTP() {
         </Box>
       </Drawer>
 
+      {/* Área do Grid Layout */}
       <Box ref={ref} sx={{ padding: '0 24px' }}>
         <GridLayout
           layout={layout}
